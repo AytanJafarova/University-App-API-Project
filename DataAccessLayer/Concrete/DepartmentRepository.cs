@@ -15,6 +15,8 @@ namespace DataAccessLayer.Concrete
         public void Add(Department department)
         {
             _uniDbContext.Departments.Add(department);
+            _uniDbContext.ChangeTracker.DetectChanges();
+            Console.WriteLine(_uniDbContext.ChangeTracker.DebugView.ShortView);
             _uniDbContext.SaveChanges();
         }
 
@@ -22,12 +24,15 @@ namespace DataAccessLayer.Concrete
         {
             var department = _uniDbContext.Departments.Find(id);
             _uniDbContext.Departments.Remove(department);
+            _uniDbContext.ChangeTracker.DetectChanges();
+            Console.WriteLine(_uniDbContext.ChangeTracker.DebugView.LongView);
             _uniDbContext.SaveChanges();
         }
 
         public List<Department> Get()
         {
-           return _uniDbContext.Departments.Include(d=>d.Courses).ToList();
+            IQueryable<Department> departments = _uniDbContext.Departments.Include(d => d.Courses).AsNoTracking().OrderBy(d=>d.DepartmentName);
+            return departments.ToList();
         }
 
         public Department Get(int id)
@@ -45,6 +50,8 @@ namespace DataAccessLayer.Concrete
         public void Update(Department department)
         {
             _uniDbContext.Departments.Update(department);
+            _uniDbContext.ChangeTracker.DetectChanges();
+            Console.WriteLine(_uniDbContext.ChangeTracker.DebugView.LongView);
             _uniDbContext.SaveChanges();
         }
     }
